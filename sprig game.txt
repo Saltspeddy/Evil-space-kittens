@@ -2,8 +2,8 @@
 First time? Check out the tutorial game:
 https://sprig.hackclub.com/gallery/getting_started
 
-@title: 
-@author: 
+@title: Evil space kittens
+@author: Dragos Gabriel Matu
 @tags: []
 @addedOn: 2024-00-00
 */
@@ -42,7 +42,6 @@ setLegend(
 .....966699.....
 ......9996......
 ................` ],
-  
   [chicken, bitmap`
 ................
 ................
@@ -62,14 +61,14 @@ setLegend(
 ................`],
   [kitty, bitmap`
 ................
-.....000000.....
-....0......0....
-...0.1...1..0...
-...0.11.11..0...
-...0.11111..0...
-...0.15151..0...
-...0.11111..0...
-....00000000..1.
+.....222222.....
+....2......2....
+...2.1...1..2...
+...2.11.11..2...
+...2.11111..2...
+...2.15151..2...
+...2.11111..2...
+....22222222..1.
 .....11111....1.
 .....122211..1..
 .....122211111..
@@ -162,7 +161,7 @@ setLegend(
 0000000000010000
 00000L0000000000
 0000000000000000`],
-    [starsbackground3, bitmap`
+  [starsbackground3, bitmap`
 0000000000000000
 0000000010000000
 00L00000000000L0
@@ -217,7 +216,6 @@ setLegend(
 ................
 ................
 ................
-................
 .......00.......
 ......0330......
 ......0330......
@@ -226,52 +224,100 @@ setLegend(
 .......00.......
 .......96.......
 ......66.9......
-......969.......
+.......69.......
 ........6.......
+.......9........
 ................
 ................`],
 )
 setBackground(starsbackground2)
 
-setSolids([ player, hairball, missile])
+setSolids([ player, hairball ])
 
 let level = 0
 const levels = [
   map`
-221252424
-2k2k2k1k5
-224222522
-432521224
 222222222
-252422242
-242122523
-122244212
-2252m2224
-4232p2522
-222122224`
+.k.k.k.k.
+.........
+.........
+.........
+.........
+.........
+.........
+.........
+....p....
+.........`
 ]
 
 setMap(levels[level])
 
 function shootMissile() {
   let x = getFirst(player).x;
-  let y = 5;
+  let y = 8;
   addSprite(x, y, missile);
+
 }
 
+let boolean = false;
+let count = 0;
 function moveMissile() {
   let missiles = getAll(missile);
   for( let i = 0 ; i < missiles.length ; i++)
     missiles[i].y -= 1;
 }
 
+function shootHairball(){
+  let x = getFirst(kitty).x;
+  let y = 5;
+  addSprite(x, y, missile);
+
+}
+
+function removeKittens() {
+  let missiles = getAll(missile)
+  for(let i = 0 ; i < missiles.length; i++ ) {
+    let kittens = getAll(kitty);
+    for( let j = 0 ; j < kittens.length; j++ ){
+      if( missiles[i].x == kittens[j].x && missiles[i].y == kittens[j].y ){
+        clearTile(kittens[j].x,kittens[j].y)
+        count++;
+        if(count == 4)
+          addText("Victory!", {x: 6,
+    y: 6,
+    color: color`8`
+    })
+      }
+    }
+  }
+}
+setInterval(() => {
+  
+},1000)
 setInterval(() => {
   
   moveMissile();
-  shootMissile();
-  
+  removeKittens();
 },500)
 
+function moveKittens() {
+  let kittens = getAll(kitty);
+  for( let i = 0 ; i < kittens.length; i++ ){
+    kittens[i].y += 1;
+
+    if(kittens[i].y + 1 == 10) 
+      addText("Game Moewver", {x: 1,
+    y: 3,
+    color: color`8`
+    })
+  }
+}
+
+
+setInterval(() => {
+  moveKittens();
+  
+}, 10000)
 setPushables({
   [ player ]: []
 })
@@ -297,7 +343,11 @@ onInput("a", () => {
 onInput("d", () => {
   getFirst(player).x += 1
 })
-
+onInput("w", () => {
+    shootMissile();
+  
+}) 
 afterInput(() => {
   clearText()
+  boolean = true;
 })
