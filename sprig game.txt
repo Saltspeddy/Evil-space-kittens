@@ -32,8 +32,8 @@ setLegend(
 .......00.......
 ......0550......
 .....005500.....
-....00555500....
-...0005665000...
+.....055550.....
+....00566500....
 ...0505665050...
 ...0505665050...
 ...0005555000...
@@ -232,20 +232,20 @@ setLegend(
 )
 setBackground(starsbackground2)
 
-setSolids([ player, hairball ])
+setSolids([ player ])
 
 let level = 0
 const levels = [
   map`
-222222222
-.k.k.k.k.
+.........
+3k.k.k.k.
+........5
 .........
 .........
 .........
 .........
-.........
-.........
-.........
+........1
+5........
 ....p....
 .........`
 ]
@@ -261,17 +261,11 @@ function shootMissile() {
 
 let boolean = false;
 let count = 0;
+
 function moveMissile() {
   let missiles = getAll(missile);
   for( let i = 0 ; i < missiles.length ; i++)
     missiles[i].y -= 1;
-}
-
-function shootHairball(){
-  let x = getFirst(kitty).x;
-  let y = 5;
-  addSprite(x, y, missile);
-
 }
 
 function removeKittens() {
@@ -282,41 +276,115 @@ function removeKittens() {
       if( missiles[i].x == kittens[j].x && missiles[i].y == kittens[j].y ){
         clearTile(kittens[j].x,kittens[j].y)
         count++;
-        if(count == 4)
-          addText("Victory!", {x: 6,
-    y: 6,
-    color: color`8`
-    })
       }
     }
   }
 }
-setInterval(() => {
-  
-},1000)
-setInterval(() => {
-  
-  moveMissile();
-  removeKittens();
-},500)
 
 function moveKittens() {
   let kittens = getAll(kitty);
   for( let i = 0 ; i < kittens.length; i++ ){
     kittens[i].y += 1;
-
-    if(kittens[i].y + 1 == 10) 
-      addText("Game Moewver", {x: 1,
-    y: 3,
-    color: color`8`
-    })
   }
 }
 
+function shootHairball() {
+  let kittens = getAll(kitty);
+  for( let i = 0 ; i < kittens.length ; i++ ) {
+    addSprite(kittens[i].x , kittens[i].y , hairball )
+  }
+}
+
+function moveHairball(){
+
+  let hairballs = getAll(hairball);
+  if(hairballs.lentgh != 0 ){
+    for( let i = 0 ; i < hairballs.length ; i++ ){
+       if( hairballs.length != 0 )
+         hairballs[i].y += 1;
+    }
+  }
+  else console.log();
+}
+
+
+function removePlayer(){
+  let hairballs = getAll(hairball);
+  for( let i = 0 ; i < hairballs.length ; i++ ){
+    if(hairballs[i].x == getFirst(player).x && hairballs[i].y == getFirst(player).y ){
+      addText("Game Moewver <3", {x: 1,
+      y: 3,
+      color: color`8`
+      })
+      console.log(3);
+    }
+  }
+  let kittens = getAll(kitty);
+  for( let i = 0 ; i < kittens.length; i++ ){
+    if(kittens[i].y + 1 == 10) {
+    addText("Game Moewver <3", {x: 1,
+    y: 3,
+    color: color`8`
+    });
+    boolean = false
+    }
+  }
+}
+
+// Removing projectiles when they reach the end of the map and when they hit eachother
+function removeProjectiles(){
+  let hairballs = getAll(hairball)
+    for( let i = 0 ; i < hairballs.length ; i++ )
+      if( hairballs[i].y == 10 ) 
+        clearTile( hairballs[i].x , 10)
+
+  let missiles = getAll(missile);
+    for( let i = 0 ; i < missiles.length ; i++)
+      if( missiles[i].y == 1 )
+        clearTile( missiles[i].x , 1)
+
+  for( let i = 0 ; i < missiles.length ; i++ )
+    for( let j = 0 ; j < hairballs.length ; j++){
+      if( missiles[i].x == hairballs[j].x && missiles[i].y == hairballs[j].y ){
+        clearTile( missiles[i].x, missiles[i].y )
+      }
+      if( missiles[i].x == hairballs[j].x && missiles[i].y + 1 == hairballs[j].y ){
+        clearTile( missiles[i].x, missiles[i].y )
+        clearTile( hairballs[j].x, hairballs[j].y )
+      }
+    }
+}
 
 setInterval(() => {
-  moveKittens();
+  if( boolean === true ){
+  shootHairball();
+  }
+},7000)
+
+setInterval(() => {
+  if( boolean === true ){
+      moveHairball();
+      moveMissile();
+      removeKittens();
+      removePlayer();
+      removeProjectiles();
+
+      if(count == 4){
+      addText("Victory!", {x: 6,
+      y: 6,
+      color: color`8`
+      })
+      }
+    }
+},500)
   
+
+
+
+setInterval(() => {
+  if( boolean === true ){
+  moveKittens();
+  }
 }, 10000)
 setPushables({
   [ player ]: []
@@ -326,7 +394,7 @@ addText("You wouldn't  ", {x: 4,
   y: 1,
   color: color`8`
 })
-  addText("hurt an innocent  ", {x: 2,
+  addText("hurt an innocent", {x: 2,
   y: 2,
   color: color`8`
 })
