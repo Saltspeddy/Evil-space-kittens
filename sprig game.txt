@@ -234,7 +234,6 @@ setBackground(starsbackground2)
 
 setSolids([ player ])
 
-let level = 0
 const levels = [
   map`
 .........
@@ -247,10 +246,22 @@ const levels = [
 ........1
 5........
 ....p....
+.........`,
+   map`
+........3
+1kckkkck.
+.........
+5.......4
+.........
+3........
+.........
+........5
+4.......1
+....p....
 .........`
 ]
 
-setMap(levels[level])
+setMap(levels[0])
 
 function shootMissile() {
   let x = getFirst(player).x;
@@ -259,7 +270,10 @@ function shootMissile() {
 
 }
 
+let level = 0;
 let boolean = false;
+
+// wsaCount of enemies killed 
 let count = 0;
 
 function moveMissile() {
@@ -316,7 +330,11 @@ function removePlayer(){
       y: 3,
       color: color`8`
       })
-      console.log(3);
+      addText("Press s to restart", {x: 1,
+      y: 6,
+      color: color`8`
+      })
+      boolean = false
     }
   }
   let kittens = getAll(kitty);
@@ -326,6 +344,11 @@ function removePlayer(){
     y: 3,
     color: color`8`
     });
+    addText("Press s to restart", {x: 1,
+    y: 6,
+    color: color`8`
+    })
+      
     boolean = false
     }
   }
@@ -369,13 +392,35 @@ setInterval(() => {
       removePlayer();
       removeProjectiles();
 
-      if(count == 4){
-      addText("Victory!", {x: 6,
-      y: 6,
-      color: color`8`
-      })
+      if( level == 0 && count == 4){
+        addText("Victory!", {x: 6,
+        y: 6,
+        color: color`8`
+        })
+        addText("Press s to go ", {x: 4,
+        y: 8,
+        color: color`8`
+        })
+        addText("to the next level ", {x: 2,
+        y: 9,
+        color: color`8`
+        })
+        boolean = false
+        level++;
+          count = 0;
       }
-    }
+      else if (level == 1 && count == 7 ) {
+        addText("Victory!", {x: 6,
+        y: 6,
+        color: color`8`
+        })
+        boolean = false
+        level++;
+          count = 0;
+        }
+      }
+
+
 },500)
   
 
@@ -402,6 +447,10 @@ addText("kitten...would you? ", {x: 1,
   y: 3,
   color: color`8`
 })
+addText("Press s to start ", {x: 1,
+  y: 6,
+  color: color`8`
+})
 
 
 
@@ -412,10 +461,31 @@ onInput("d", () => {
   getFirst(player).x += 1
 })
 onInput("w", () => {
-    shootMissile();
-  
+    shootMissile();  
 }) 
+
+onInput("s", () => {
+  console.log(boolean)
+  if(boolean == false){
+    if( level == 0 ){
+      clearText()
+      boolean = true;
+      console.log(boolean)
+    }
+    if( level == 1 ){
+      setMap(levels[1]);
+      clearText();
+      boolean = true;
+      console.log(boolean)
+    }
+    if( level == 2 ){
+      setMap(levels[2]);
+      boolean = true;
+      console.log(boolean)
+    }
+  }
+})
+
 afterInput(() => {
   clearText()
-  boolean = true;
 })
