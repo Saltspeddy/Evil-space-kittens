@@ -469,9 +469,9 @@ const levels = [
 .........`,
   map`
 .........
+.........
 ...265...
 ..71347..
-.........
 .........
 .........
 .........
@@ -481,7 +481,7 @@ const levels = [
 .........`,
 ]
 
-setMap(levels[2]);
+setMap(levels[0]);
 
 function shootMissile() {
   let x = getFirst(player).x;
@@ -556,9 +556,17 @@ function moveKittens() {
   for( let i = 0 ; i < kittens.length; i++ ){
     kittens[i].y += 1;
   }
-  let cats = getAll(cat)
-  for( let i = 0 ; i < cats.length ; i++ ){
-    cats[i].y += 1;
+  if(level == 1 || level == 2 ){ 
+    let cats = getAll(cat)
+    for( let i = 0 ; i < cats.length ; i++ ){
+      cats[i].y += 1;
+    }
+    if(level == 2){
+      let tomcats = getAll(tomcat)
+      for( let i = 0 ; i < tomcats.length ; i++ ){
+        tomcats[i].y += 1;
+      }
+    }
   }
 }
 
@@ -570,17 +578,37 @@ function shootHairball() {
 }
 
 function moveHairball(){
-
   let hairballs = getAll(hairball);
-  if(hairballs.lentgh != 0 ){
-    for( let i = 0 ; i < hairballs.length ; i++ ){
-       if( hairballs.length != 0 )
-         hairballs[i].y += 1;
-    }
+  for( let i = 0 ; i < hairballs.length ; i++ ){
+    hairballs[i].y += 1;
   }
-  else console.log();
 }
 
+function shootFireball(){
+  let tomcats = getAll(tomcat);
+  for( let i = 0 ; i < tomcats.length ; i++ ) {
+    addSprite(tomcats[i].x , tomcats[i].y , fireball )
+  }
+}
+
+function moveFireball(){
+  let fireballs = getAll(fireball);
+  if(fireballs.lentgh != 0 ){
+    for( let i = 0 ; i < fireballs.length ; i++ ){
+       if( fireballs.length != 0 )
+         fireballs[i].y += 1;
+    }
+  }
+
+}
+
+function fireballTrail(){
+  let fireballs = getAll(fireball);
+  for( let i = 0 ; i < fireballs.length ; i++ ){
+    addSprite(fireballs[i].x, fireballs[i].y, firetrail)
+  }
+
+}
 
 function removePlayer(){
   let hairballs = getAll(hairball);
@@ -600,6 +628,8 @@ function removePlayer(){
     }
   }
   let kittens = getAll(kitty);
+  let cats = getAll(cat);
+  let tomcats = getAll(tomcat);
   for( let i = 0 ; i < kittens.length; i++ ){
     if(kittens[i].y + 1 == 10) {
     addText("Game Moewver <3", {x: 1,
@@ -613,6 +643,40 @@ function removePlayer(){
     level = 0;
     setMap(levels[0]);
     boolean = false
+    }
+    if(level == 1 || level == 2){
+      for( let j = 0 ; j < cats.length ; j++ ){
+        if(cats[j].y + 1 == 10) {
+        addText("Game Moewver <3", {x: 1,
+        y: 3,
+        color: color`8`
+        });
+        addText("Press s to restart", {x: 1,
+        y: 6,
+        color: color`8`
+        })
+        level = 0;
+        setMap(levels[0]);
+        boolean = false
+        }
+      }
+      if(level == 2){
+        for( let l = 0 ; l < tomcats.length ; l++ ){
+          if(tomcats[l].y + 1 == 10) {
+          addText("Game Moewver <3", {x: 1,
+          y: 3,
+          color: color`8`
+          });
+          addText("Press s to restart", {x: 1,
+          y: 6,
+          color: color`8`
+          })
+          level = 0;
+          setMap(levels[0]);
+          boolean = false
+          }
+        }
+      }
     }
   }
 }
@@ -640,9 +704,9 @@ function removeProjectiles(){
       }
     }
   let fields = getAll(meowField)
-    for( let i = 0 ; i < fields.length ; i++)
-      if( fields[i].y == 10 )
-        clearTile( fields[i].x , 10)
+  for( let i = 0 ; i < fields.length ; i++)
+    if( fields[i].y == 10 )
+      clearTile( fields[i].x , 10)
   for( let i = 0 ; i < missiles.length ; i++ )
     for( let j = 0 ; j < fields.length ; j++){
       if( missiles[i].x == fields[j].x && missiles[i].y == fields[j].y ){
@@ -653,11 +717,27 @@ function removeProjectiles(){
         clearTile( fields[j].x, fields[j].y )
       }
     }
+
+  let fireballs = getAll(fireball)
+  for( let i = 0 ; i < fireballs.length ; i++)
+      if( fireballs[i].y == 10 )
+        clearTile( fireballs[i].x , 10)
+  for( let i = 0 ; i < missiles.length ; i++ )
+    for( let j = 0 ; j < fireballs.length ; j++){
+      if( missiles[i].x == fireballs[j].x && missiles[i].y == fireballs[j].y ){
+        clearTile( missiles[i].x, missiles[i].y )
+      }
+      if( missiles[i].x == fireballs[j].x && missiles[i].y + 1 == fireballs[j].y ){
+        clearTile( missiles[i].x, missiles[i].y )
+        clearTile( fireballs[j].x, fireballs[j].y )
+      }
+    }
 }
 
 setInterval(() => {
   if( boolean === true ){
   shootHairball();
+  shootFireball();
   }
 },7000)
 
@@ -665,6 +745,8 @@ setInterval(() => {
 setInterval(() => {
   if( boolean === true ){
       moveHairball();
+      moveFireball();
+      fireballTrail()
       moveMissile();
       removeKittens();
       removePlayer();
@@ -864,6 +946,11 @@ onInput("s", () => {
     }
     if( level == 2 ){
       setMap(levels[2]);
+      clearText();
+      boolean = true;
+    }
+    if( level == 3 ){
+      setMap(levels[3]);
       clearText();
       boolean = true;
     }
