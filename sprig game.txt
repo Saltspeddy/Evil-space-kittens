@@ -79,6 +79,7 @@ setLegend(
 ......0..0......
 .....0....0.....
 ................`],
+  
   [kitty, bitmap`
 ................
 .....222222.....
@@ -130,6 +131,7 @@ setLegend(
 ....LL1111LLL.LL
 ....LL1111LLLLL.
 ....LL1111LLLLL.`],
+  
   [hairball, bitmap`
 ................
 ................
@@ -249,7 +251,26 @@ setLegend(
 .......9........
 ................
 ................`],
-    [bosscat1, bitmap`
+    [meowField, bitmap`
+................
+................
+....F......F....
+....4DD..DD4....
+.....4FDDF4.....
+..F....44....F..
+..4DDD....DDD4..
+...44FDDDDF44...
+.F...444444...F.
+.4DF...44...FD4.
+..4DDF....FDD4..
+...44DDDDDD44...
+.....444444.....
+................
+................
+................`],
+
+  
+  [bosscat1, bitmap`
 .......999999009
 .......999999900
 .......999999999
@@ -351,7 +372,7 @@ setLegend(
 9909999999990999
 9909999999990999
 9909999999990999`],
-    [bosscat7, bitmap`
+  [bosscat7, bitmap`
 ................
 ................
 ................
@@ -400,9 +421,9 @@ const levels = [
 .........`,
   map`
 .........
-.kckkkck.
+.tck.kct.
 .........
-.........
+...tct...
 .........
 .........
 .........
@@ -413,14 +434,14 @@ const levels = [
 map`
 .........
 ...265...
-..71347..
+...134...
+...7.7...
 .........
 .........
 .........
 .........
 .........
-.........
-.........
+....p....
 .........`
 ]
 
@@ -428,7 +449,7 @@ setMap(levels[0]);
 
 function shootMissile() {
   let x = getFirst(player).x;
-  let y = 8;
+  let y = 9;
   addSprite(x, y, missile);
 
 }
@@ -455,13 +476,44 @@ function removeKittens() {
         count++;
       }
     }
+    if(level == 1){
+    let cats = getAll(cat)
+      for (let j = 0 ; j < cats.length ; j++ ){
+        if( missiles[i].x == cats[j].x && missiles[i].y == cats[j].y ){
+        clearTile(cats[j].x,cats[j].y)
+        count++;
+      }
+      }
+    }
   }
+}
+
+function enableMeowField(){
+  let cats = getAll(cat)
+ 
+  for( let i = 0 ; i < cats.length ; i++ ){
+    addSprite(cats[i].x, cats[i].y + 1, meowField)
+    addSprite(cats[i].x + 1, cats[i].y + 1, meowField)
+    addSprite(cats[i].x - 1, cats[i].y + 1, meowField)
+    addSprite(cats[i].x, cats[i].y + 2, meowField)
+  }
+    
+}
+function moveMeowField(){
+  let fields = getAll(meowField)
+
+  for(let i = 0 ; i < fields.length ; i++ )
+    fields[i].y += 1
 }
 
 function moveKittens() {
   let kittens = getAll(kitty);
   for( let i = 0 ; i < kittens.length; i++ ){
     kittens[i].y += 1;
+  }
+  let cats = getAll(cat)
+  for( let i = 0 ; i < cats.length ; i++ ){
+    cats[i].y += 1;
   }
 }
 
@@ -497,6 +549,8 @@ function removePlayer(){
       y: 6,
       color: color`8`
       })
+      level = 0;
+      setMap(levels[0]);
       boolean = false
     }
   }
@@ -511,7 +565,8 @@ function removePlayer(){
     y: 6,
     color: color`8`
     })
-      
+    level = 0;
+    setMap(levels[0]);
     boolean = false
     }
   }
@@ -539,6 +594,20 @@ function removeProjectiles(){
         clearTile( hairballs[j].x, hairballs[j].y )
       }
     }
+  let fields = getAll(meowField)
+    for( let i = 0 ; i < fields.length ; i++)
+      if( fields[i].y == 10 )
+        clearTile( fields[i].x , 10)
+  for( let i = 0 ; i < missiles.length ; i++ )
+    for( let j = 0 ; j < fields.length ; j++){
+      if( missiles[i].x == fields[j].x && missiles[i].y == fields[j].y ){
+        clearTile( missiles[i].x, missiles[i].y )
+      }
+      if( missiles[i].x == fields[j].x && missiles[i].y + 1 == fields[j].y ){
+        clearTile( missiles[i].x, missiles[i].y )
+        clearTile( fields[j].x, fields[j].y )
+      }
+    }
 }
 
 setInterval(() => {
@@ -547,6 +616,7 @@ setInterval(() => {
   }
 },7000)
 
+
 setInterval(() => {
   if( boolean === true ){
       moveHairball();
@@ -554,6 +624,7 @@ setInterval(() => {
       removeKittens();
       removePlayer();
       removeProjectiles();
+     
 
       if( level == 0 && count == 4){
         addText("Victory!", {x: 6,
@@ -577,6 +648,31 @@ setInterval(() => {
         y: 6,
         color: color`8`
         })
+        addText("Press s to go ", {x: 4,
+        y: 8,
+        color: color`8`
+        })
+        addText("to the next level ", {x: 2,
+        y: 9,
+        color: color`8`
+        })
+        boolean = false
+        level++;
+          count = 0;
+        }
+    else if (level == 2 && count == 9 ) {
+        addText("Victory!", {x: 6,
+        y: 6,
+        color: color`8`
+        })
+        addText("Press s to go ", {x: 4,
+        y: 8,
+        color: color`8`
+        })
+        addText("to the next level ", {x: 2,
+        y: 9,
+        color: color`8`
+        })
         boolean = false
         level++;
           count = 0;
@@ -591,7 +687,10 @@ setInterval(() => {
 
 setInterval(() => {
   if( boolean === true ){
+  enableMeowField()
   moveKittens();
+
+    moveMeowField()
   }
 }, 10000)
 setPushables({
@@ -618,37 +717,36 @@ addText("Press s to start ", {x: 1,
 
 
 onInput("a", () => {
+  if(boolean == true)
   getFirst(player).x -= 1
 })
 onInput("d", () => {
+  if(boolean == true)
   getFirst(player).x += 1
 })
 onInput("w", () => {
+  if(boolean == true)
+
     shootMissile();  
 }) 
 
 onInput("s", () => {
-  console.log(boolean)
   if(boolean == false){
     if( level == 0 ){
       clearText()
       boolean = true;
-      console.log(boolean)
     }
     if( level == 1 ){
       setMap(levels[1]);
       clearText();
       boolean = true;
-      console.log(boolean)
     }
     if( level == 2 ){
       setMap(levels[2]);
       boolean = true;
-      console.log(boolean)
     }
   }
 })
 
 afterInput(() => {
-  clearText()
 })
