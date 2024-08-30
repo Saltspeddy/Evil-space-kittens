@@ -38,7 +38,10 @@ const starsbackground5 ="o"
 
 //Projectiles
 const hairball = "h"
+
+//fireball and firetrail are a combination for the level 3 tomcats and is basicaly a super hairball that block the player off
 const fireball = "f"
+const firetrail = "r"
 const missile = "m";
 
 //MeowField is basically a shield that the level 2 white cats use to protect themselves and the neighbouring cats from the player missiles
@@ -99,15 +102,15 @@ setLegend(
 ................`],
   [cat, bitmap`
 ................
-.....000000.....
-....0......0....
-...0.2....2.0...
-...0.22..22.0...
-...0.222222.0...
-...0.202022.0...
-...0.222222.0...
-....02222220....
-.....000000.....
+.....222222.....
+....2......2....
+...2.2....2.2...
+...2.22..22.2...
+...2.222222.2...
+...2.202022.2...
+...2.222222.2...
+....22222222....
+.....222222.....
 ......33333...2.
 ......22622...2.
 ......22222...2.
@@ -115,23 +118,56 @@ setLegend(
 .....222222222..
 ................`],
   [tomcat, bitmap`
-.....000000.....
-....0......0....
-...0.L....L.0...
-..0..LL..LL..0..
-..0..LLLLLL..0..
-..0..L5L5LL..0..
-..0.00LLLL00.0..
-..0..LL3LLL..0..
-...0.LLLLLL.0...
-....00000000..LL
+.....222222.....
+....2......2....
+...2.L....L.2...
+..2..LL..LL..2..
+..2..LLLLLL..2..
+..2..L5L5LL..2..
+..2.00LLLL00.2..
+..2..LL3LLL..2..
+...2.LLLLLL.2...
+....22222222..LL
 .....LLLLLL..L.L
 .....LL11LLL...L
 ....LL1111LL...L
 ....LL1111LLL.LL
 ....LL1111LLLLL.
 ....LL1111LLLLL.`],
-  
+  [fireball, bitmap`
+................
+................
+................
+...9....6.9..9..
+.9.3.6.9...39...
+..9.3636993.....
+...696366636....
+..3663963639.3..
+...9663966993...
+..6363693969....
+...966333336....
+....3336333.....
+.....39333......
+................
+................
+................`],
+  [firetrail, bitmap`
+................
+................
+................
+.......6.6......
+.....6..6.......
+......96.93.....
+.......963......
+......399.9.....
+......63.3......
+.......33.......
+................
+................
+................
+................
+................
+................`],
   [hairball, bitmap`
 ................
 ................
@@ -431,21 +467,21 @@ const levels = [
 .........
 ....p....
 .........`,
-map`
+  map`
 .........
 ...265...
-...134...
-...7.7...
+..71347..
+.........
 .........
 .........
 .........
 .........
 .........
 ....p....
-.........`
+.........`,
 ]
 
-setMap(levels[0]);
+setMap(levels[2]);
 
 function shootMissile() {
   let x = getFirst(player).x;
@@ -476,13 +512,22 @@ function removeKittens() {
         count++;
       }
     }
-    if(level == 1){
-    let cats = getAll(cat)
+    if(level == 1 || level == 2){
+      let cats = getAll(cat)
       for (let j = 0 ; j < cats.length ; j++ ){
         if( missiles[i].x == cats[j].x && missiles[i].y == cats[j].y ){
         clearTile(cats[j].x,cats[j].y)
         count++;
+        }
       }
+    }
+    if(level == 2){
+      let tomcats = getAll(tomcat)
+      for (let j = 0 ; j < tomcats.length ; j++ ){
+        if( missiles[i].x == tomcats[j].x && missiles[i].y == tomcats[j].y ){
+        clearTile(tomcats[j].x,tomcats[j].y)
+        count++;
+        }
       }
     }
   }
@@ -724,10 +769,86 @@ onInput("d", () => {
   if(boolean == true)
   getFirst(player).x += 1
 })
-onInput("w", () => {
-  if(boolean == true)
 
-    shootMissile();  
+function missileCooldown(){
+  let missiles = getAll(missile)
+  for( let i = 0 ; i < missiles.length ; i++ ){
+    if( missiles[i].y - 1 == getFirst(player).y && missiles[i].x ==  getFirst(player).x){
+      return 0;
+          console.log(3);
+
+    }
+    // console.log(3);
+  }
+  return 1;
+}
+let loaded = true
+onInput("w", () => {
+  if(boolean == true){
+    if(loaded == true){
+      loaded = false
+      shootMissile();
+      clearText()
+      addText("L", {x: 0,
+        y: 1,
+        color: color`3`
+        })
+        addText("o", {x: 0,
+        y: 2,
+        color: color`3`
+        })
+        addText("a", {x: 0,
+        y: 3,
+        color: color`3`
+        })
+        addText("d", {x: 0,
+        y: 4,
+        color: color`3`
+        })
+        addText("i", {x: 0,
+        y: 5,
+        color: color`3`
+        })
+        addText("n", {x: 0,
+        y: 6,
+        color: color`3`
+        })
+        addText("g", {x: 0,
+        y: 7,
+        color: color`3`
+        })
+      setTimeout(() => {
+        loaded = true
+        clearText()
+        addText("L", {x: 0,
+        y: 1,
+        color: color`4`
+        })
+        addText("o", {x: 0,
+        y: 2,
+        color: color`4`
+        })
+        addText("a", {x: 0,
+        y: 3,
+        color: color`4`
+        })
+        addText("d", {x: 0,
+        y: 4,
+        color: color`4`
+        })
+        addText("e", {x: 0,
+        y: 5,
+        color: color`4`
+        })
+        addText("d", {x: 0,
+        y: 6,
+        color: color`4`
+        })
+      }, 1000);
+    }
+
+  }
+  
 }) 
 
 onInput("s", () => {
@@ -743,6 +864,7 @@ onInput("s", () => {
     }
     if( level == 2 ){
       setMap(levels[2]);
+      clearText();
       boolean = true;
     }
   }
