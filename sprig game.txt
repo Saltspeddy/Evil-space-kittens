@@ -428,10 +428,11 @@ function enableMeowField(){
   let cats = getAll(cat)
 
   for( let i = 0 ; i < cats.length ; i++ ){
-    if(cats[i].y < 5){
+    if(cats[i].y < 7){
       addSprite(cats[i].x, cats[i].y + 1, meowField)
       addSprite(cats[i].x + 1, cats[i].y + 1, meowField)
       addSprite(cats[i].x - 1, cats[i].y + 1, meowField)
+      if(cats[i].y < 6)
       addSprite(cats[i].x, cats[i].y + 2, meowField)
     }
   }
@@ -545,6 +546,7 @@ function removePlayer(){
       level = 0;
       setMap(levels[0]);
       boolean = false
+      count = 0;
     }
   }
   let trails = getAll(firetrail)
@@ -561,12 +563,12 @@ function removePlayer(){
       level = 0;
       setMap(levels[0]);
       boolean = false
+      count = 0;
+
     }
   }
   
   let kittens = getAll(kitty);
-  let cats = getAll(cat);
-  let tomcats = getAll(tomcat);
   for( let i = 0 ; i < kittens.length; i++ ){
     if(kittens[i].y + 1 == 10) {
     addText("Game Moewver <3", {x: 1,
@@ -578,27 +580,29 @@ function removePlayer(){
     color: color`8`
     })
     level = 0;
-    setMasp(levels[0]);
+    setMap(levels[0]);
     boolean = false
     count = 0;
     }
-    if(level == 1 || level == 2){
-      for( let j = 0 ; j < cats.length ; j++ ){
-        console.log(cats[j].y)
-        if(cats[j].y + 1 == 10) {
-          addText("Game Moewver <3", {x: 1,
-          y: 3,
-          color: color`8`
-          });
-          addText("Press s to restart", {x: 1,
-          y: 6,
-          color: color`8`
-          })
-          level = 0;
-          setMap(levels[0]);
-          boolean = false 
-          count = 0;
-        }
+  }
+  if(level == 1 || level == 2){
+    let cats = getAll(cat);
+    for( let j = 0 ; j < cats.length ; j++ ){
+      console.log(getFirst(player).y)
+      if(cats[j].y + 1 == 10) {
+        console.log("I am here!")
+        addText("Game Moewver <3", {x: 1,
+        y: 3,
+        color: color`8`
+        });
+        addText("Press s to restart", {x: 1,
+        y: 6,
+        color: color`8`
+        })
+        level = 0;
+        setMap(levels[0]);
+        boolean = false 
+        count = 0;
       }
     }
   }
@@ -628,9 +632,8 @@ function removeProjectiles(){
     }
   let fields = getAll(meowField)
   for( let i = 0 ; i < fields.length ; i++)
-    if( fields[i].y == 9 ){
-      clearTile( fields[i].x , 9)
-      clearTile( fields[i].x , 10)
+    if( fields[i].y == 8 ){
+      clearTile( fields[i].x , 8)
     }
   for( let i = 0 ; i < missiles.length ; i++ )
     for( let j = 0 ; j < fields.length ; j++){
