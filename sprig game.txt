@@ -23,9 +23,8 @@ const bosscat3 = "3"
 const bosscat4 = "4"
 const bosscat5 = "5"
 const bosscat6 = "6"
-const bosscat7 = "7"
-const bosscat8 = "8"
-const bosscat9 = "9"
+const paw = "7"
+
 
 //BACKGROUND
 const starsbackground ="a"
@@ -213,7 +212,7 @@ setLegend(
 9909999999990999
 9909999999990999
 9909999999990999`],
-  [bosscat7, bitmap`
+  [paw, bitmap`
 ................
 ................
 ................
@@ -390,9 +389,9 @@ const levels = [
 .........`,
 ]
 
-setMap(levels[0]);
+setMap(levels[3]);
 
-let level = 0;
+let level = 3;
 let boolean = false;
 //Count of enemies killed so that I don't have to chek every time for how many enemies are left on the map
 let count = 0;
@@ -503,7 +502,7 @@ function removeKittens() {
   }
 }
 
-//Unit advancement thru the map
+//Unit advancement through the map
 function moveKittens() {
   let kittens = getAll(kitty);
   for( let i = 0 ; i < kittens.length; i++ ){
@@ -686,8 +685,17 @@ let firballs = getAll(fireball)
 }
 
 //Boss level functions
-function numberOfLives(){
 
+let barrage = false;
+
+function numberOfLives(){
+  if(bossLives == 5){
+    addText("Damn you ball of fur", {x: 2,
+        y: 6,
+        color: color`8`
+        })
+    barrage = true
+  }
   if(bossLives == 0){
      addText("Victory!", {x: 6,
         y: 6,
@@ -698,6 +706,42 @@ function numberOfLives(){
 }
 
 let bossLives = 9;
+
+function bossField(){
+  for( let i = 1 ; i <= 7 ; i++ ){
+    clearTile( i, 5 )
+    addSprite( i, 5, meowField  )
+  }
+}
+
+let way = true
+function bossProjectiles(){
+  way = !way
+  if(barrage){
+    addSprite(2 , 4 , fireball)
+    addSprite(6 , 4 , fireball)
+    setTimeout(() => {
+    addSprite(4 , 4 , fireball)
+    }, 500)
+    setTimeout(() => {
+    addSprite(2 , 4 , fireball)
+    addSprite(6 , 4 , fireball)
+    }, 1500)
+  }
+  else{
+    if(way){
+      addSprite(1, 4, hairball)
+      addSprite(3, 4, hairball)
+      addSprite(5, 4, hairball)
+      addSprite(7, 4, hairball)
+    }
+    else{
+      addSprite(2, 4, hairball)
+      addSprite(4, 4, hairball)
+      addSprite(6, 4, hairball)
+    }
+  }
+}
 
 function damageBoss(){
   let missiles = getAll(missile);
@@ -717,14 +761,15 @@ function damageBoss(){
   console.log(bossLives)
 }
 
-
 setInterval(() => {
   if( boolean === true ){
   shootHairball();
   shootFireball();
+    if(level == 3){
+       bossProjectiles()
+    }
   }
 },7000)
-
 
 setInterval(() => {
   if( boolean === true ){
@@ -736,8 +781,8 @@ setInterval(() => {
       removePlayer();
       removeProjectiles();
       if( level == 3){
-       damageBoss();
-        numberOfLives()
+         damageBoss();
+         numberOfLives()
       }
 
       if( level == 0 && count == 4){
@@ -790,39 +835,55 @@ setInterval(() => {
         level++;
           count = 0;
         }
-    else if (level == 2 && count == 8 ) {
-        addText("Victory!", {x: 6,
-        y: 6,
-        color: color`8`
-        })
-        addText("Press s to go ", {x: 4,
-        y: 8,
-        color: color`8`
-        })
-        addText("to the next level ", {x: 2,
-        y: 9,
-        color: color`8`
-        })
-        boolean = false
-        level++;
+        else if (level == 2 && count == 8 ) {
+          addText("Victory!", {x: 6,
+          y: 6,
+          color: color`8`
+          })
+          addText("Press s to go ", {x: 4,
+          y: 8,
+          color: color`8`
+          })
+          addText("to the next level ", {x: 2,
+          y: 9,
+          color: color`8`
+          })
+          boolean = false
+          level++;
+          count = 0;
+        }
+        else if (level == 3 && bossLives == 0 ) {
+          addText("Victory!", {x: 6,
+          y: 6,
+          color: color`8`
+          })
+          addText("Press s to ", {x: 4,
+          y: 8,
+          color: color`8`
+          })
+          addText("restart", {x: 2,
+          y: 9,
+          color: color`8`
+          })
+          boolean = false
+          level++;
           count = 0;
         }
       }
-
-
 },500)
   
-
-
-
 setInterval(() => {
   if( boolean === true ){
   enableMeowField()
   moveKittens();
-
+  if(level != 3)  
     moveMeowField()
+    if( level == 3 ){
+       bossField()
+    }
   }
 }, 10000)
+
 setPushables({
   [ player ]: []
 })
@@ -844,29 +905,17 @@ addText("Press s to start ", {x: 1,
   color: color`8`
 })
 
-
-
+//Player input
 onInput("a", () => {
   if(boolean == true)
   getFirst(player).x -= 1
 })
+
 onInput("d", () => {
   if(boolean == true)
   getFirst(player).x += 1
 })
 
-function missileCooldown(){
-  let missiles = getAll(missile)
-  for( let i = 0 ; i < missiles.length ; i++ ){
-    if( missiles[i].y - 1 == getFirst(player).y && missiles[i].x ==  getFirst(player).x){
-      return 0;
-          console.log(3);
-
-    }
-    // console.log(3);
-  }
-  return 1;
-}
 let loaded = true
 onInput("w", () => {
   if(boolean == true){
@@ -902,34 +951,36 @@ onInput("w", () => {
         y: 7,
         color: color`3`
         })
-      setTimeout(() => {
-        loaded = true
-        clearText()
-        addText("L", {x: 0,
-        y: 1,
-        color: color`4`
-        })
-        addText("o", {x: 0,
-        y: 2,
-        color: color`4`
-        })
-        addText("a", {x: 0,
-        y: 3,
-        color: color`4`
-        })
-        addText("d", {x: 0,
-        y: 4,
-        color: color`4`
-        })
-        addText("e", {x: 0,
-        y: 5,
-        color: color`4`
-        })
-        addText("d", {x: 0,
-        y: 6,
-        color: color`4`
-        })
-      }, 1000);
+      
+        //Stops the player from spamming the projectiles and adds a bit of a more challanging perspective because now you have to deal with the loading mechanic
+        setTimeout(() => {
+          loaded = true
+          clearText()
+          addText("L", {x: 0,
+          y: 1,
+          color: color`4`
+          })
+          addText("o", {x: 0,
+          y: 2,
+          color: color`4`
+          })
+          addText("a", {x: 0,
+          y: 3,
+          color: color`4`
+          })
+          addText("d", {x: 0,
+          y: 4,
+          color: color`4`
+          })
+          addText("e", {x: 0,
+          y: 5,
+          color: color`4`
+          })
+          addText("d", {x: 0,
+          y: 6,
+          color: color`4`
+          })
+        }, 1000);
     }
 
   }
@@ -966,6 +1017,7 @@ onInput("s", () => {
       setMap(levels[3]);
       clearText();
       boolean = true;
+
     }
   }
 })
