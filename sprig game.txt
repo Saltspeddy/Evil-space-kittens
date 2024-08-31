@@ -457,8 +457,8 @@ const levels = [
 .........`,
   map`
 .........
-.tck.kct.
-.........
+.tc...ct.
+....k....
 ...tct...
 .........
 .........
@@ -561,12 +561,6 @@ function moveKittens() {
     for( let i = 0 ; i < cats.length ; i++ ){
       cats[i].y += 1;
     }
-    if(level == 2){
-      let tomcats = getAll(tomcat)
-      for( let i = 0 ; i < tomcats.length ; i++ ){
-        tomcats[i].y += 1;
-      }
-    }
   }
 }
 
@@ -593,28 +587,59 @@ function shootFireball(){
 
 function moveFireball(){
   let fireballs = getAll(fireball);
-  if(fireballs.lentgh != 0 ){
     for( let i = 0 ; i < fireballs.length ; i++ ){
-       if( fireballs.length != 0 )
-         fireballs[i].y += 1;
-    }
-  }
-
+      fireballs[i].y += 1;
+      if(fireballs[i].y == 6){
+        clearTile(fireballs[i].x, fireballs[i].y)
+        addSprite(fireballs[i].x, fireballs[i].y, firetrail)
+        addSprite(fireballs[i].x+1, fireballs[i].y, firetrail)
+        addSprite(fireballs[i].x-1, fireballs[i].y, firetrail)
+      }
+    }  
 }
+  
 
-function fireballTrail(){
-  let fireballs = getAll(fireball);
-  for( let i = 0 ; i < fireballs.length ; i++ ){
-    addSprite(fireballs[i].x, fireballs[i].y, firetrail)
-  }
 
+function moveFiretrail(){
+ let trails = getAll(firetrail)
+ for( let i = 0 ; i < trails.length ; i++ ){
+  trails[i].y += 1
+ }
 }
 
 function removePlayer(){
   let hairballs = getAll(hairball);
   for( let i = 0 ; i < hairballs.length ; i++ ){
     if(hairballs[i].x == getFirst(player).x && hairballs[i].y == getFirst(player).y ){
-      addText("Game Moewver <3", {x: 1,
+      addText("Couldnt handle ", {x: 1,
+      y: 3,
+      color: color`8`
+      })
+      addText("the fluff", {x: 1,
+      y: 4,
+      color: color`8`
+      })
+      addText("so here is " , {x: 1,
+      y: 5,
+      color: color`8`
+      })
+      addText("a hairball!" , {x: 1,
+      y: 6,
+      color: color`8`
+      })
+      addText("Press s to restart", {x: 1,
+      y: 8,
+      color: color`8`
+      })
+      level = 0;
+      setMap(levels[0]);
+      boolean = false
+    }
+  }
+  let trails = getAll(firetrail)
+  for( let i = 0 ; i < trails.length ; i++ ){
+    if(trails[i].x == getFirst(player).x && trails[i].y == getFirst(player).y ){
+      addText("Too hot to handle", {x: 1,
       y: 3,
       color: color`8`
       })
@@ -627,6 +652,7 @@ function removePlayer(){
       boolean = false
     }
   }
+  
   let kittens = getAll(kitty);
   let cats = getAll(cat);
   let tomcats = getAll(tomcat);
@@ -705,7 +731,7 @@ function removeProjectiles(){
     }
   let fields = getAll(meowField)
   for( let i = 0 ; i < fields.length ; i++)
-    if( fields[i].y == 10 )
+    if( fields[i].y == 9 )
       clearTile( fields[i].x , 10)
   for( let i = 0 ; i < missiles.length ; i++ )
     for( let j = 0 ; j < fields.length ; j++){
@@ -717,19 +743,34 @@ function removeProjectiles(){
         clearTile( fields[j].x, fields[j].y )
       }
     }
-
-  let fireballs = getAll(fireball)
-  for( let i = 0 ; i < fireballs.length ; i++)
-      if( fireballs[i].y == 10 )
-        clearTile( fireballs[i].x , 10)
+  
+let firballs = getAll(fireball)
+  for( let i = 0 ; i < firballs.length ; i++)
+      if( firballs[i].y == 10 )
+        clearTile( firballs[i].x , 10)
   for( let i = 0 ; i < missiles.length ; i++ )
-    for( let j = 0 ; j < fireballs.length ; j++){
-      if( missiles[i].x == fireballs[j].x && missiles[i].y == fireballs[j].y ){
+    for( let j = 0 ; j < firballs.length ; j++){
+      if( missiles[i].x == firballs[j].x && missiles[i].y == firballs[j].y ){
         clearTile( missiles[i].x, missiles[i].y )
       }
-      if( missiles[i].x == fireballs[j].x && missiles[i].y + 1 == fireballs[j].y ){
+      if( missiles[i].x == firballs[j].x && missiles[i].y + 1 == firballs[j].y ){
         clearTile( missiles[i].x, missiles[i].y )
-        clearTile( fireballs[j].x, fireballs[j].y )
+        clearTile( firballs[j].x, firballs[j].y )
+      }
+    }
+  
+  let trails = getAll(firetrail)
+  for( let i = 0 ; i < trails.length ; i++)
+      if( trails[i].y == 10 )
+        clearTile( trails[i].x , 10)
+  for( let i = 0 ; i < missiles.length ; i++ )
+    for( let j = 0 ; j < trails.length ; j++){
+      if( missiles[i].x == trails[j].x && missiles[i].y == trails[j].y ){
+        clearTile( missiles[i].x, missiles[i].y )
+      }
+      if( missiles[i].x == trails[j].x && missiles[i].y + 1 == trails[j].y ){
+        clearTile( missiles[i].x, missiles[i].y )
+        clearTile( trails[j].x, trails[j].y )
       }
     }
 }
@@ -746,7 +787,7 @@ setInterval(() => {
   if( boolean === true ){
       moveHairball();
       moveFireball();
-      fireballTrail()
+       moveFiretrail();
       moveMissile();
       removeKittens();
       removePlayer();
@@ -754,7 +795,11 @@ setInterval(() => {
      
 
       if( level == 0 && count == 4){
-        addText("Victory!", {x: 6,
+        addText("You're not a cat", {x: 2,
+        y: 5,
+        color: color`8`
+        })
+        addText("person are you?", {x: 2,
         y: 6,
         color: color`8`
         })
@@ -771,7 +816,19 @@ setInterval(() => {
           count = 0;
       }
       else if (level == 1 && count == 7 ) {
-        addText("Victory!", {x: 6,
+        addText("Stop! You're ruining", {x: 0,
+        y: 3,
+        color: color`8`
+        })
+        addText("my evil...", {x: 0,
+        y: 4,
+        color: color`8`
+        })
+        addText("I mean, cute ", {x: 0,
+        y: 5,
+        color: color`8`
+        })
+        addText("cat empire", {x: 0,
         y: 6,
         color: color`8`
         })
@@ -787,7 +844,7 @@ setInterval(() => {
         level++;
           count = 0;
         }
-    else if (level == 2 && count == 9 ) {
+    else if (level == 2 && count == 8 ) {
         addText("Victory!", {x: 6,
         y: 6,
         color: color`8`
